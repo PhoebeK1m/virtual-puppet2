@@ -100,3 +100,7 @@ a.current {
         max-width: 160px;
     }
 }
+.hidden {
+    display: none !important;
+}
+

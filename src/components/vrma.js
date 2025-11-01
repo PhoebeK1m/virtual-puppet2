@@ -182,7 +182,7 @@ export const rigFace = (riggedFace, currentVrm) => {
     rigRotation(VRMHumanBoneName.Neck, {
         x: -riggedFace.head.x,  // invert pitch
         y: riggedFace.head.y,   // yaw usually ok
-        z: riggedFace.head.z,   // roll usually ok
+        z: -riggedFace.head.z,   // roll usually ok
     }, 0.7, 0.3, currentVrm);
 
     const expressionManager = currentVrm.expressionManager;

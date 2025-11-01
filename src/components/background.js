@@ -34,13 +34,13 @@ export function loadBackground(scene) {
     const backLight = new THREE.PointLight(0xffac00, 1, 0);
     backLight.position.set(18.5,-1.5,0);
     scene.add(backLight);
-    const backLightHelper = new THREE.PointLightHelper(backLight)
-    scene.add(backLightHelper);
+    // const backLightHelper = new THREE.PointLightHelper(backLight)
+    // scene.add(backLightHelper);
     const frontLight = new THREE.PointLight(0xffffff, 0.1, 0); 
     frontLight.position.set(21,-2,0);
     scene.add(frontLight);
-    const frontLightHelper = new THREE.PointLightHelper(frontLight)
-    scene.add(frontLightHelper);
+    // const frontLightHelper = new THREE.PointLightHelper(frontLight)
+    // scene.add(frontLightHelper);
 }
 
 function loadTexture(textureUrl, scene, vector){

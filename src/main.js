@@ -1,10 +1,10 @@
 // src/main.js
 
 // Imports (ESM)
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { VRMUtils, VRMLoaderPlugin } from '@pixiv/three-vrm';
-import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-vrm-animation';
+// import * as THREE from 'three';
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+// import { VRMUtils, VRMLoaderPlugin } from '@pixiv/three-vrm';
+// import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-vrm-animation';
 import { createOrbitRig } from './components/camera.js';
 import { loadVRMModel } from './components/vrm.js';
 import { loadVRMA, playVRMAAnimation, stopVRMAAnimation } from './components/vrma.js';
@@ -18,6 +18,10 @@ let vrmaClip = null;
 let vrmaAction = null;
 let isVRMAPlaying = false;
 const clock = new THREE.Clock();
+const videoEl = document.querySelector('.input_video');
+const guideEl = document.querySelector('.guides');
+videoEl.classList.add('hidden');
+guideEl.classList.add('hidden');
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // alpha: true
@@ -27,7 +31,7 @@ document.body.appendChild(renderer.domElement);
 
 // Scene
 const scene = new THREE.Scene();
-scene.add(new THREE.AxesHelper(100)); // delete later
+// scene.add(new THREE.AxesHelper(100)); // delete later
 
 // Camera
 const { orbitCamera } = createOrbitRig(renderer);
@@ -58,8 +62,10 @@ loadVRMModel(scene, gltfLoader, '/viseme.vrm')
     // Load VRMA animation after the VRM model is loaded
     loadVRMA(gltfLoader, currentVrm, './talking.vrma', (clip) => {
       vrmaClip = clip;
+      if (!mixer) mixer = new THREE.AnimationMixer(currentVrm.scene);
+      vrmaAction = playVRMAAnimation(mixer, vrmaClip, currentVrm);
+      isVRMAPlaying = true;
     });
-    console.log("Available bones:", vrm.humanoid?.normalizedHumanBones);
   })
   .catch((error) => {
     console.error('Error loading VRM model:', error);
@@ -70,11 +76,14 @@ function toggleVRMA() {
   if (isVRMAPlaying) {
     stopVRMAAnimation(vrmaAction);
     isVRMAPlaying = false;
-
+    videoEl.classList.remove('hidden');
+    guideEl.classList.remove('hidden');
   } else {
     if (!mixer) mixer = new THREE.AnimationMixer(currentVrm.scene);
     vrmaAction = playVRMAAnimation(mixer, vrmaClip, currentVrm);
     isVRMAPlaying = true;
+    videoEl.classList.add('hidden');
+    guideEl.classList.add('hidden');
   }
 }
 
