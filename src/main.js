@@ -1,10 +1,10 @@
 // src/main.js
 
 // Imports (ESM)
-// import * as THREE from 'three';
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-// import { VRMUtils, VRMLoaderPlugin } from '@pixiv/three-vrm';
-// import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-vrm-animation';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { VRMUtils, VRMLoaderPlugin } from '@pixiv/three-vrm';
+import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-vrm-animation';
 import { createOrbitRig } from './components/camera.js';
 import { loadVRMModel } from './components/vrm.js';
 import { loadVRMA, playVRMAAnimation, stopVRMAAnimation } from './components/vrma.js';
@@ -72,18 +72,55 @@ loadVRMModel(scene, gltfLoader, '/viseme.vrm')
 });
 
 // Play/stop VRMA animation
+// function toggleVRMA() {
+//   if (isVRMAPlaying) {
+//     stopVRMAAnimation(vrmaAction);
+//     isVRMAPlaying = false;
+//     videoEl.classList.remove('hidden');
+//     guideEl.classList.remove('hidden');
+//   } else {
+//     if (!mixer) mixer = new THREE.AnimationMixer(currentVrm.scene);
+//     vrmaAction = playVRMAAnimation(mixer, vrmaClip, currentVrm);
+//     isVRMAPlaying = true;
+//     videoEl.classList.add('hidden');
+//     guideEl.classList.add('hidden');
+//   }
+// }
+
+function stopVideoStream(videoEl) {
+  if (videoEl && videoEl.srcObject) {
+    const stream = videoEl.srcObject;
+    const tracks = stream.getTracks();
+    tracks.forEach(track => track.stop());  // stops camera + mic
+    videoEl.srcObject = null;
+  }
+}
+
+
 function toggleVRMA() {
   if (isVRMAPlaying) {
+    // Stop animation → go to live mode
     stopVRMAAnimation(vrmaAction);
     isVRMAPlaying = false;
     videoEl.classList.remove('hidden');
     guideEl.classList.remove('hidden');
+
+    // 🔹 Start camera
+    camera.start();
+
+    // Also start processing again if using a manual loop
+    // processVideoFrame();
   } else {
+    // Stop live → play idle animation
     if (!mixer) mixer = new THREE.AnimationMixer(currentVrm.scene);
     vrmaAction = playVRMAAnimation(mixer, vrmaClip, currentVrm);
     isVRMAPlaying = true;
     videoEl.classList.add('hidden');
     guideEl.classList.add('hidden');
+
+    // 🔹 Stop camera completely
+    camera.stop();
+    stopVideoStream(videoEl);
   }
 }
 
@@ -155,3 +192,41 @@ function animate() {
 }
 
 animate();
+
+// Select the input and button
+const chatInput = document.getElementById('chat-input');
+const sendBtn = document.getElementById('send-btn');
+
+// Function to show a chat bubble response
+function showChatResponse(text) {
+  const chatArea = document.getElementById('chat-area');
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble';
+  bubble.innerHTML = `<span>${text}</span>`;
+  chatArea.appendChild(bubble);
+
+  // Remove the bubble after 10 seconds
+  setTimeout(() => {
+    bubble.remove();
+  }, 10000);
+}
+
+// Handle send button click
+sendBtn.addEventListener('click', () => {
+  const message = chatInput.value.trim();
+  if (message) {
+    console.log("User:", message); // your logic here
+    chatInput.value = '';
+
+    // Example: generate a chatbot reply
+    const reply = "You said: " + message;
+    showChatResponse(reply);
+  }
+});
+
+// Optional: press Enter to send
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    sendBtn.click();
+  }
+});

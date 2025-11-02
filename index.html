@@ -5,6 +5,9 @@
     <title>Animated Me</title>
     <link rel="stylesheet" href="src/style.css" />
     <link rel="icon" href="public/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pangolin&display=swap" rel="stylesheet">
     <!--     Mediapipe or Tensorflow.js -->
     <script
       src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1635989137/holistic.js"
@@ -32,5 +35,11 @@
     </div>
     <script type="module" src="src/main.js"></script>
     <button id="toggleIdle">Toggle Animation</button>
+    <!-- Chat input bar -->
+    <div id="chat-area"></div>
+    <div id="chat-container">
+      <input type="text" id="chat-input" placeholder="Ask me anything..." />
+      <button id="send-btn">Send</button>
+    </div>
   </body>
 </html>

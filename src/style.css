@@ -1,8 +1,9 @@
-@font-face {
-    font-family: "Jelly";
-    font-display: block;
-    src: url("https://yeemachine.github.io/kalidoface-live2d-models/Font/kalidoface-jelly.ttf") format("truetype");
+.pangolin-regular {
+  font-family: "Pangolin", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
+
 
 #toggleIdle {
     position: absolute;
@@ -103,4 +104,93 @@ a.current {
 .hidden {
     display: none !important;
 }
+#chat-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px;
+    box-sizing: border-box;
+    backdrop-filter: blur(6px);
+}
 
+#chat-input {
+  width: clamp(200px, 70%, 600px); /* 👈 auto-shrinks between 200–600px */
+    font-family: "Pangolin", cursive;
+    font-weight: 400;
+    font-style: normal;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    margin-right: 10px;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+#send-btn {
+    font-family: "Pangolin", cursive;
+    font-weight: 400;
+    font-style: normal;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: #505963;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#send-btn:hover {
+    background: #97a0aa;
+}
+
+#chat-area {
+    position: fixed;
+    bottom: 90px; /* above your chat bar */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none; /* clicks pass through */
+}
+
+.chat-bubble {
+    position: relative;
+    display: inline-block;
+    background: url("../public/theater/chatbubble.png") no-repeat center/contain;
+    width: 500px;
+    height: 160px;
+    text-align: center;
+    color: #000000;
+    font-family: "Pangolin", cursive;
+    font-size: 18px;
+    line-height: 1.2;
+    padding: 20px;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards, fadeOut 1s ease 9s forwards;
+}
+
+.chat-bubble span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: pre-wrap;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; transform: scale(0.9); }
+}
