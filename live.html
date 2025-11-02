@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Live Animation</title>
+    <link rel="stylesheet" href="src/style.css" />
+    <link rel="icon" href="public/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Pangolin&display=swap" rel="stylesheet">
+
+    <!-- Mediapipe + Kalidokit dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/kalidokit@1.1/dist/kalidokit.umd.js"></script>
+
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+</head> 
+<body>
+    <nav>
+        <a href="index.html">
+            <img src="ask.png" alt="Home" class="nav-icon"/>
+        </a>
+        <a href="live.html">
+            <img src="camera.png" alt="Live" class="nav-icon"/>
+        </a>
+    </nav>
+
+    <div class="preview">
+        <video class="input_video" width="1280" height="720" autoplay muted playsinline></video>
+        <canvas class="guides"></canvas>
+    </div>
+
+    <script type="module" src="src/live.js"></script>
+</body>
+</html>

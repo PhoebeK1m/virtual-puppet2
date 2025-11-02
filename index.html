@@ -1,45 +1,31 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8" />
-    <title>Animated Me</title>
+    <title>Animated Chat</title>
     <link rel="stylesheet" href="src/style.css" />
     <link rel="icon" href="public/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pangolin&display=swap" rel="stylesheet">
-    <!--     Mediapipe or Tensorflow.js -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1635989137/holistic.js"
-      crossorigin="anonymous"
-    ></script>
-    <!--     Mediapipe Drawing Tools -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
-      crossorigin="anonymous"
-    ></script>
-    <!--     Mediapipe Camera Tools -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
-      crossorigin="anonymous"
-    ></script>
-    <!--     Kalidokit Kinematic Solver -->
-    <script src="https://cdn.jsdelivr.net/npm/kalidokit@1.1/dist/kalidokit.umd.js"></script>
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
     <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
-  </head> 
-  <body>
-    <div class="preview">
-      <video class="input_video" width="1280px" height="720px"  autoplay muted playsinline></video>
-      <canvas class="guides"></canvas>
-    </div>
-    <script type="module" src="src/main.js"></script>
-    <button id="toggleIdle">Toggle Animation</button>
-    <!-- Chat input bar -->
+</head> 
+<body>
+  <nav>
+        <a href="index.html">
+            <img src="ask.png" alt="Home" class="nav-icon"/>
+        </a>
+        <a href="live.html">
+            <img src="camera.png" alt="Live" class="nav-icon"/>
+        </a>
+  </nav>
+
+    <!-- Chat interface -->
     <div id="chat-area"></div>
     <div id="chat-container">
       <input type="text" id="chat-input" placeholder="Ask me anything..." />
       <button id="send-btn">Send</button>
     </div>
-  </body>
+
+    <script type="module" src="src/chat.js"></script>
+</body>
 </html>
