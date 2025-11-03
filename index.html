@@ -10,23 +10,32 @@
     <script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 </head> 
 <body>
-  <nav>
+    <!-- Password Screen -->
+    <div id="password-screen">
+        <div id="password-box">
+            <h2>Enter Password</h2>
+            <input type="password" id="password-input"/>
+            <p id="password-error"></p>
+        </div>
+    </div>
+
+    <nav>
         <a href="index.html">
             <img src="ask.png" alt="Home" class="nav-icon"/>
         </a>
         <a href="live.html">
             <img src="camera.png" alt="Live" class="nav-icon"/>
         </a>
-        <a href="index.html">
+        <a href="resume.html">
             <img src="resume.png" alt="Resume" class="nav-icon"/>
         </a>
-  </nav>
+    </nav>
 
     <!-- Chat interface -->
     <div id="chat-area"></div>
     <div id="chat-container">
-      <input type="text" id="chat-input" placeholder="Ask me anything..." />
-      <button id="send-btn">Send</button>
+        <input type="text" id="chat-input" placeholder="Ask me anything..." />
+        <button id="send-btn">Send</button>
     </div>
 
     <script type="module" src="src/chat.js"></script>

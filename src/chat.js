@@ -139,8 +139,6 @@ function stopTalkingAnimation() {
     }, 800);
 }
 
-
-
 // Simple Chat UI
 const chatInput = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
@@ -169,9 +167,6 @@ function showChatResponse(text) {
         stopTalkingAnimation();
     }, duration);
 }
-
-
-
 
 sendBtn.addEventListener('click', async () => {
     const message = chatInput.value.trim();
@@ -224,3 +219,30 @@ async function sendMessageToAzure(prompt) {
     return reply;
 }
 
+// Password Gate
+const PASSWORD = "beansbeans"; 
+const screen = document.getElementById("password-screen");
+const input = document.getElementById("password-input");
+
+const errorMsg = document.getElementById("password-error");
+
+// Prevent access until unlocked
+document.body.style.overflow = "hidden";
+
+input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") checkPassword();
+});
+
+function checkPassword() {
+    if (input.value.trim().toLowerCase() === PASSWORD.toLowerCase()) {
+        // Success: fade out overlay
+        screen.classList.add("hidden");
+        setTimeout(() => {
+        screen.remove();
+        document.body.style.overflow = "auto";
+        }, 700);
+    } else {
+        errorMsg.textContent = "Incorrect password. Try again.";
+        input.value = "";
+    }
+}

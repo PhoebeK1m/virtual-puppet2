@@ -48,6 +48,7 @@ nav {
     top: 12px;
     right: 16px;
     display: flex;
+    z-index: 10000; 
 }
 nav img {
     width: 36px;
@@ -202,14 +203,63 @@ a.current {
 }
 
 .nav-icon:hover {
-  animation: jiggle 0.8s ease-in-out infinite;
+    animation: jiggle 0.8s ease-in-out infinite;
 }
 
 /* Define the jiggle animation */
 @keyframes jiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(3deg); }
-  50% { transform: rotate(-3deg); }
-  75% { transform: rotate(2deg); }
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(3deg); }
+    50% { transform: rotate(-3deg); }
+    75% { transform: rotate(2deg); }
 }
+
+/* === Password Overlay === */
+#password-screen {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.6s ease;
+}
+
+#password-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#password-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 40px 50px;
+    text-align: center;
+}
+
+#password-box h2 {
+    color: white;
+    font-family: 'Pangolin', sans-serif;
+    margin-bottom: 10px;
+}
+
+#password-box input {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    width: 180px;
+    text-align: center;
+    outline: none;
+    font-size: 1rem;
+}
+
+#password-error {
+    color: #ff6961;
+    font-size: 0.9rem;
+    height: 1.2rem;
+}
+
 
