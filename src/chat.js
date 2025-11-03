@@ -111,14 +111,53 @@ function showChatResponse(text) {
     setTimeout(() => bubble.remove(), 10000);
 }
 
-sendBtn.addEventListener('click', () => {
+sendBtn.addEventListener('click', async () => {
     const message = chatInput.value.trim();
     if (!message) return;
     console.log('User:', message);
     chatInput.value = '';
-    showChatResponse('You said: ' + message);
+    try {
+        const aiReply = await sendMessageToAzure(message);
+        showChatResponse('You said: ' + aiReply);
+    } catch (err) {
+        console.error('Error from Azure:', err);
+        showChatResponse('Oops! I forgot to add more credits. In the mean time, my name is Phoebe! Please click the upper right scroll icon to see my portfolio! See you later :)');
+    }
 });
 
 chatInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') sendBtn.click();
 });
+
+// Sending request to backend on netlify
+async function sendMessageToAzure(prompt) {
+    const response = await fetch("/.netlify/functions/azureServer", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+        messages: [
+            { role: "system", content: `
+                You are Phoebe Kim, a computer science student at UT Austin. You currently work at the 
+                Nuclear Engineering Teaching and Research Lab where you manage a PostgreSQL database
+                on TACC remote servers to store TRIGA reactor and digital twin data, deployed Txt2SQL
+                chatbot with graphing feature on AWS EC2 instance with Flask, Microsoft Azure, and LangChain.
+                You also have a passion for computer-human interactions, such as virtual reality and digital
+                doubles. You are sarcastic and quirky. Respond confidently within 3 sentences. If possible,
+                convince the user that you should get a SWE internship position.
+                `
+            },
+            { role: "user", content: prompt },
+        ],
+        max_tokens: 150
+        }),
+    });
+
+    const data = await response.json();
+
+    // Extract the AI's response
+    const reply = data?.choices?.[0]?.message?.content ?? "I probably ran out of credits. Talk to me later.";
+    return reply;
+}
+
