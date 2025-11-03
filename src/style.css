@@ -201,3 +201,15 @@ a.current {
     display: inline-block;
 }
 
+.nav-icon:hover {
+  animation: jiggle 0.8s ease-in-out infinite;
+}
+
+/* Define the jiggle animation */
+@keyframes jiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(3deg); }
+  50% { transform: rotate(-3deg); }
+  75% { transform: rotate(2deg); }
+}
+
