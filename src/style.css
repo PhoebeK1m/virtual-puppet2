@@ -167,7 +167,7 @@ a.current {
     display: inline-block;
     background: url("../public/theater/chatbubble.png") no-repeat center/contain;
     width: 500px;
-    height: 160px;
+    height: 200px;
     text-align: center;
     color: #000000;
     font-family: "Pangolin", cursive;

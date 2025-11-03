@@ -105,11 +105,22 @@ const sendBtn = document.getElementById('send-btn');
 function showChatResponse(text) {
     const chatArea = document.getElementById('chat-area');
     const bubble = document.createElement('div');
-    bubble.className = 'chat-bubble';
-    bubble.innerHTML = `<span>${text}</span>`;
+    bubble.className = 'chat-bubble loading';
+    bubble.innerHTML = `<span></span>`;
     chatArea.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 10000);
+
+    // Force reflow (ensures it renders visually before adding text)
+    void bubble.offsetWidth;
+
+    // Add text after a short delay so the bubble shows first
+    setTimeout(() => {
+        bubble.querySelector('span').textContent = text;
+        bubble.classList.remove('loading');
+    }, 50); // adjust if necessary
+
+    setTimeout(() => bubble.remove(), 100000);
 }
+
 
 sendBtn.addEventListener('click', async () => {
     const message = chatInput.value.trim();
@@ -118,7 +129,7 @@ sendBtn.addEventListener('click', async () => {
     chatInput.value = '';
     try {
         const aiReply = await sendMessageToAzure(message);
-        showChatResponse('You said: ' + aiReply);
+        showChatResponse(aiReply);
     } catch (err) {
         console.error('Error from Azure:', err);
         showChatResponse('Oops! I forgot to add more credits. In the mean time, my name is Phoebe! Please click the upper right scroll icon to see my portfolio! See you later :)');
