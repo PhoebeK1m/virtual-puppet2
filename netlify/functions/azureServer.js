@@ -1,6 +1,5 @@
 export async function handler(event) {
-  // ✅ Replace with your actual Netlify site URL
-  const allowedOrigin = "https://your-site-name.netlify.app"; 
+  const allowedOrigin = "https://virtual-puppet.netlify.app"; 
   const origin = event.headers.origin;
 
   // Handle preflight (CORS OPTIONS)
@@ -32,10 +31,9 @@ export async function handler(event) {
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
-  // ✅ Forward to Azure OpenAI API
   try {
     const azureResponse = await fetch(
-      "https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/YOUR_DEPLOYMENT_NAME/chat/completions?api-version=2024-06-01",
+      "https://virtual-puppet-resource.cognitiveservices.azure.com/openai/deployments/gpt-4o-2024-08-06-ft-8ba822937c0a498f8636591cb9f56c7b/chat/completions?api-version=2025-01-01-preview",
       {
         method: "POST",
         headers: {
