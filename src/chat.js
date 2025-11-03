@@ -43,7 +43,7 @@ gltfLoader.crossOrigin = 'anonymous';
 loadVRMModel(scene, gltfLoader, '/viseme.vrm')
     .then(vrm => {
         currentVrm = vrm;
-        loadVRMA(gltfLoader, currentVrm, './talking.vrma', clip => {
+        loadVRMA(gltfLoader, currentVrm, '/talking.vrma', clip => {
         vrmaClip = clip;
         mixer = new THREE.AnimationMixer(currentVrm.scene);
         vrmaAction = playVRMAAnimation(mixer, vrmaClip, currentVrm);

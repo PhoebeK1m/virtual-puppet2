@@ -60,7 +60,7 @@ loadVRMModel(scene, gltfLoader, '/viseme.vrm')
     currentVrm = vrm;  // Set currentVrm once it is loaded
 
     // Load VRMA animation after the VRM model is loaded
-    loadVRMA(gltfLoader, currentVrm, './talking.vrma', (clip) => {
+    loadVRMA(gltfLoader, currentVrm, '/talking.vrma', (clip) => {
       vrmaClip = clip;
       if (!mixer) mixer = new THREE.AnimationMixer(currentVrm.scene);
       vrmaAction = playVRMAAnimation(mixer, vrmaClip, currentVrm);

@@ -7,9 +7,9 @@ export async function handler(event) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "api-key": process.env.AZURE_API_KEY, // secret!
+          "api-key": process.env.AZURE_API_KEY,
         },
-        body: event.body, // send the same JSON the frontend sent
+        body: event.body,
       }
     );
 
