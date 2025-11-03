@@ -11,9 +11,12 @@ import { loadBackground } from './components/background.js';
 // Global state
 let currentVrm;
 let mixer;
-let vrmaClip = null;
-let vrmaAction = null;
-let isVRMAPlaying = false;
+let idleClip = null;
+let talkingClip = null;
+
+let idleAction = null;
+let talkingAction = null;
+
 const clock = new THREE.Clock();
 
 // Renderer
@@ -27,7 +30,7 @@ const scene = new THREE.Scene();
 const { orbitCamera } = createOrbitRig(renderer);
 loadBackground(scene);
 
-// === Resize Handling ===
+// Resize Handling
 window.addEventListener('resize', () => {
     orbitCamera.aspect = window.innerWidth / window.innerHeight;
     orbitCamera.updateProjectionMatrix();
@@ -43,14 +46,25 @@ gltfLoader.crossOrigin = 'anonymous';
 loadVRMModel(scene, gltfLoader, '/viseme.vrm')
     .then(vrm => {
         currentVrm = vrm;
-        loadVRMA(gltfLoader, currentVrm, '/talking.vrma', clip => {
-        vrmaClip = clip;
         mixer = new THREE.AnimationMixer(currentVrm.scene);
-        vrmaAction = playVRMAAnimation(mixer, vrmaClip, currentVrm);
-        isVRMAPlaying = true;
-    });
-})
+
+        // Load idle animation first
+        loadVRMA(gltfLoader, currentVrm, '/idle.vrma', clip => {
+        idleClip = clip;
+        idleAction = mixer.clipAction(idleClip);
+        idleAction.play(); // start looping immediately
+        });
+
+        // Load talking animation next
+        loadVRMA(gltfLoader, currentVrm, '/talking.vrma', clip => {
+        talkingClip = clip;
+        talkingAction = mixer.clipAction(talkingClip);
+        talkingAction.loop = THREE.LoopRepeat;
+        talkingAction.clampWhenFinished = true;
+        });
+    })
 .catch(err => console.error('Error loading VRM:', err));
+
 
 // Camera movement
 const mouse = { x: 0, y: 0 };
@@ -98,6 +112,35 @@ function animate() {
 }
 animate();
 
+function playTalkingAnimation() {
+    if (!mixer || !talkingAction || !idleAction) return;
+
+    idleAction.enabled = true;
+    talkingAction.enabled = true;
+
+    talkingAction.reset();
+    talkingAction.setEffectiveTimeScale(1);
+    talkingAction.setEffectiveWeight(1);
+    talkingAction.play();
+
+    idleAction.crossFadeTo(talkingAction, 0.6, false);
+}
+
+function stopTalkingAnimation() {
+    if (!mixer || !talkingAction || !idleAction) return;
+
+    idleAction.enabled = true;
+    talkingAction.enabled = true;
+
+    talkingAction.crossFadeTo(idleAction, 1, false);
+
+    setTimeout(() => {
+        idleAction.reset().play();
+    }, 800);
+}
+
+
+
 // Simple Chat UI
 const chatInput = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
@@ -109,17 +152,25 @@ function showChatResponse(text) {
     bubble.innerHTML = `<span></span>`;
     chatArea.appendChild(bubble);
 
-    // Force reflow (ensures it renders visually before adding text)
-    void bubble.offsetWidth;
+    // Trigger smooth transition to talking animation
+    playTalkingAnimation();
 
-    // Add text after a short delay so the bubble shows first
+    void bubble.offsetWidth;
     setTimeout(() => {
         bubble.querySelector('span').textContent = text;
         bubble.classList.remove('loading');
-    }, 50); // adjust if necessary
+    }, 150);
 
-    setTimeout(() => bubble.remove(), 100000);
+    // Duration scaled by text length for realism
+    const duration = Math.min(10000, 2000 + text.length * 50);
+
+    setTimeout(() => {
+        bubble.remove();
+        stopTalkingAnimation();
+    }, duration);
 }
+
+
 
 
 sendBtn.addEventListener('click', async () => {
@@ -132,7 +183,9 @@ sendBtn.addEventListener('click', async () => {
         showChatResponse(aiReply);
     } catch (err) {
         console.error('Error from Azure:', err);
-        showChatResponse('Oops! I forgot to add more credits. In the mean time, my name is Phoebe! Please click the upper right scroll icon to see my portfolio! See you later :)');
+        showChatResponse(`Oops! I forgot to add more credits. In the mean time... 
+            my name is Phoebe! Please click the upper right scroll icon to see my
+            portfolio! See you later :)`);
     }
 });
 
