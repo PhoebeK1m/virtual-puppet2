@@ -1,8 +1,11 @@
 // src/components/mediapipe.js
 
-import { Holistic } from '@mediapipe/holistic';
-import { Camera } from '@mediapipe/camera_utils';
-import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
+// import { Holistic } from '@mediapipe/holistic';
+// import { Camera } from '@mediapipe/camera_utils';
+// import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
+const { Holistic } = window.holistic;
+const { Camera } = window;
+const { drawConnectors, drawLandmarks } = window;
 import { animateVRM } from './vrma.js';
 
 let videoElement = document.querySelector(".input_video"),
