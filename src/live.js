@@ -1,4 +1,5 @@
 // src/live.js
+// // import { holistic, onResults, animateWithResults } from './components/mediapipe.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin } from '@pixiv/three-vrm';
@@ -6,7 +7,16 @@ import { VRMAnimationLoaderPlugin } from '@pixiv/three-vrm-animation';
 import { createOrbitRig } from './components/camera.js';
 import { loadVRMModel } from './components/vrm.js';
 import { loadBackground } from './components/background.js';
-import { holistic, onResults, animateWithResults } from './components/mediapipe.js';
+import {
+  setupMediapipe,
+  animateWithResults,
+  onResults
+} from "./components/mediapipe.js";
+
+const videoEl = document.querySelector('.input_video');
+const guideEl = document.querySelector('.guides');
+
+setupMediapipe(videoEl, guideEl, onResults);
 
 let currentVrm;
 let mixer;
@@ -60,9 +70,9 @@ const camParams = {
 let curYaw = camParams.yawCenter;
 let curPitch = camParams.pitchCenter;
 
-// Mediapipe stuff
-const videoEl = document.querySelector('.input_video');
-const guideEl = document.querySelector('.guides');
+// Mediapipe stuffs
+// const videoEl = document.querySelector('.input_video');
+// const guideEl = document.querySelector('.guides');
 
 holistic.onResults(onResults);
 

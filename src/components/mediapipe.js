@@ -1,67 +1,48 @@
 // src/components/mediapipe.js
 
-// Use UMD globals loaded in HTML
-const videoElement = document.querySelector(".input_video");
-const guideCanvas = document.querySelector("canvas.guides");
-
-const { Holistic } = window.holistic;
-const { Camera } = window;
-const { drawConnectors, drawLandmarks } = window;
+// src/components/mediapipe.js
 
 import { animateVRM } from "./vrma.js";
 
+let holistic;
+let camera;
 let latestResults = null;
 
-export const onResults = (results) => {
-    drawResults(results);
-    latestResults = results;
-};
-
-export const animateWithResults = (currentVrm) => {
-    if (latestResults && currentVrm) {
-        animateVRM(currentVrm, latestResults, videoElement);
-    }
-};
-
-// Create Holistic instance using UMD API
-export const holistic = new Holistic({
-    locateFile: (file) =>
+export function setupMediapipe(videoEl, guideCanvas, onResults) {
+    // Create holistic instance once Mediapipe UMD is loaded
+    holistic = new window.holistic.Holistic({
+        locateFile: (file) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/${file}`,
-});
+    });
 
-holistic.setOptions({
-    modelComplexity: 1,
-    smoothLandmarks: true,
-    refineFaceLandmarks: true,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5,
-});
+    holistic.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        refineFaceLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+    });
 
-// Register callback
-holistic.onResults(onResults);
+    holistic.onResults((results) => {
+        latestResults = results;
+        onResults(results, guideCanvas);
+    });
 
-// DRAWING
-function drawResults(results) {
-    guideCanvas.width = videoElement.videoWidth;
-    guideCanvas.height = videoElement.videoHeight;
+    camera = new window.Camera(videoEl, {
+        onFrame: async () => {
+        await holistic.send({ image: videoEl });
+        },
+    });
 
-    const ctx = guideCanvas.getContext("2d");
-    ctx.clearRect(0, 0, guideCanvas.width, guideCanvas.height);
+    camera.start();
+    }
 
-    drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS);
-    drawLandmarks(ctx, results.poseLandmarks);
-    drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION);
-    drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS);
-    drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS);
+    export function animateWithResults(currentVrm) {
+    if (latestResults && currentVrm) {
+        animateVRM(currentVrm, latestResults);
+    }
 }
 
-// Start camera
-export const camera = new Camera(videoElement, {
-    onFrame: async () => {
-        await holistic.send({ image: videoElement });
-    },
-});
-camera.start();
 
 // // src/components/mediapipe.js
 
