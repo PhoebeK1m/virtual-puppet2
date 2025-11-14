@@ -6,7 +6,12 @@ import { VRMAnimationLoaderPlugin } from '@pixiv/three-vrm-animation';
 import { createOrbitRig } from './components/camera.js';
 import { loadVRMModel } from './components/vrm.js';
 import { loadBackground } from './components/background.js';
-import { holistic, onResults, animateWithResults } from './components/mediapipe.js';
+// import { holistic, onResults, animateWithResults } from './components/mediapipe.js';
+import {
+  holistic,
+  onResults,
+  animateWithResults
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1930/+esm";
 
 let currentVrm;
 let mixer;
