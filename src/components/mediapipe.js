@@ -2,14 +2,37 @@
 
 // src/components/mediapipe.js
 
+// src/components/mediapipe.js
+
 import { animateVRM } from "./vrma.js";
 
-let holistic;
-let camera;
+// Will be initialized later
+let holistic = null;
+let camera = null;
 let latestResults = null;
 
-export function setupMediapipe(videoEl, guideCanvas, onResults) {
-    // Create holistic instance once Mediapipe UMD is loaded
+/**
+ * This function is imported by live.js.
+ * It is used to handle holistic.onResults().
+ */
+export function onResults(results, guideCanvas) {
+    latestResults = results;
+    drawResults(results, guideCanvas);
+}
+
+/**
+ * Called by live.js every frame to animate VRM.
+ */
+export function animateWithResults(currentVrm) {
+    if (latestResults && currentVrm) {
+        animateVRM(currentVrm, latestResults);
+    }
+}
+
+/**
+ * Called once from live.js to initialize Mediapipe.
+ */
+export function setupMediapipe(videoEl, guideCanvas, onResultsCallback) {
     holistic = new window.holistic.Holistic({
         locateFile: (file) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/${file}`,
@@ -24,25 +47,49 @@ export function setupMediapipe(videoEl, guideCanvas, onResults) {
     });
 
     holistic.onResults((results) => {
-        latestResults = results;
-        onResults(results, guideCanvas);
+        onResultsCallback(results, guideCanvas);
     });
 
     camera = new window.Camera(videoEl, {
         onFrame: async () => {
         await holistic.send({ image: videoEl });
-        },
+        }
     });
 
     camera.start();
-    }
-
-    export function animateWithResults(currentVrm) {
-    if (latestResults && currentVrm) {
-        animateVRM(currentVrm, latestResults);
-    }
 }
 
+// --- drawing helpers ---
+function drawResults(results, guideCanvas) {
+    if (!guideCanvas) return;
+
+    guideCanvas.width = results.image.width;
+    guideCanvas.height = results.image.height;
+
+    const ctx = guideCanvas.getContext("2d");
+    ctx.clearRect(0, 0, guideCanvas.width, guideCanvas.height);
+
+    const { drawConnectors, drawLandmarks } = window;
+
+    if (results.poseLandmarks) {
+        drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS);
+        drawLandmarks(ctx, results.poseLandmarks);
+    }
+
+    if (results.faceLandmarks) {
+        drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION);
+    }
+
+    if (results.leftHandLandmarks) {
+        drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS);
+        drawLandmarks(ctx, results.leftHandLandmarks);
+    }
+
+    if (results.rightHandLandmarks) {
+        drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS);
+        drawLandmarks(ctx, results.rightHandLandmarks);
+    }
+}
 
 // // src/components/mediapipe.js
 
