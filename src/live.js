@@ -10,13 +10,12 @@ import { loadBackground } from './components/background.js';
 import {
   setupMediapipe,
   animateWithResults,
-  onResults
 } from "./components/mediapipe.js";
 
 const videoEl = document.querySelector('.input_video');
 const guideEl = document.querySelector('.guides');
 
-setupMediapipe(videoEl, guideEl, onResults);
+setupMediapipe(videoEl, guideEl);
 
 let currentVrm;
 let mixer;
@@ -74,7 +73,7 @@ let curPitch = camParams.pitchCenter;
 // const videoEl = document.querySelector('.input_video');
 // const guideEl = document.querySelector('.guides');
 
-holistic.onResults(onResults);
+// holistic.onResults(onResults);
 
 // Animation loop
 function animate() {

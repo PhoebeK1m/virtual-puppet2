@@ -32,8 +32,8 @@ export function animateWithResults(currentVrm) {
 /**
  * Called once from live.js to initialize Mediapipe.
  */
-export function setupMediapipe(videoEl, guideCanvas, onResultsCallback) {
-    holistic = new window.holistic.Holistic({
+export function setupMediapipe(videoEl, guideCanvas) {
+    holistic = new window.Holistic({
         locateFile: (file) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/${file}`,
     });
