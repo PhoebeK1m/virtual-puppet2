@@ -12,6 +12,13 @@ import { loadBackground } from './components/background.js';
 let currentVrm;
 let mixer;
 const clock = new THREE.Clock();
+let mediapipeReady = false;
+let minimumTimePassed = false;
+setTimeout(() => {
+    minimumTimePassed = true;
+    tryRemoveLoadingScreen();
+}, 5000);
+
 
 // Renderer 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -65,7 +72,24 @@ let curPitch = camParams.pitchCenter;
 const videoEl = document.querySelector('.input_video');
 const guideEl = document.querySelector('.guides');
 
-holistic.onResults(onResults);
+holistic.onResults((results) => {
+    if (!mediapipeReady) {
+        mediapipeReady = true;
+        tryRemoveLoadingScreen();
+    }
+    onResults(results);
+});
+
+function tryRemoveLoadingScreen() {
+    if (mediapipeReady && minimumTimePassed) {
+        const loadingScreen = document.getElementById("loading-screen");
+        if (loadingScreen) {
+            loadingScreen.classList.add("hidden");
+            setTimeout(() => loadingScreen.remove(), 800);
+        }
+    }
+}
+
 
 // Animation loop
 function animate() {

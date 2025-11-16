@@ -1,7 +1,7 @@
 .pangolin-regular {
-  font-family: "Pangolin", cursive;
-  font-weight: 400;
-  font-style: normal;
+    font-family: "Pangolin", cursive;
+    font-weight: 400;
+    font-style: normal;
 }
 
 
@@ -121,7 +121,7 @@ a.current {
 }
 
 #chat-input {
-  width: clamp(200px, 70%, 600px); /* 👈 auto-shrinks between 200–600px */
+  width: clamp(200px, 70%, 600px); /* auto-shrinks between 200–600px */
     font-family: "Pangolin", cursive;
     font-weight: 400;
     font-style: normal;
@@ -214,7 +214,7 @@ a.current {
     75% { transform: rotate(2deg); }
 }
 
-/* === Password Overlay === */
+/* Password Overlay */
 #password-screen {
     position: fixed;
     inset: 0;
@@ -262,4 +262,47 @@ a.current {
     height: 1.2rem;
 }
 
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    background: #0f0f0f;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Pangolin', sans-serif;
+    font-size: 25px;
+    z-index: 9999;
+    transition: opacity 0.7s ease;
+}
+
+#loading-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.wave-text span {
+    display: inline-block;
+    animation: wave 1.2s infinite ease-in-out;
+}
+
+.wave-text span:nth-child(1) { animation-delay: 0s; }
+.wave-text span:nth-child(2) { animation-delay: 0.1s; }
+.wave-text span:nth-child(3) { animation-delay: 0.2s; }
+.wave-text span:nth-child(4) { animation-delay: 0.3s; }
+.wave-text span:nth-child(5) { animation-delay: 0.4s; }
+.wave-text span:nth-child(6) { animation-delay: 0.5s; }
+.wave-text span:nth-child(7) { animation-delay: 0.6s; }
+.wave-text span:nth-child(8) { animation-delay: 0.7s; }
+.wave-text span:nth-child(9) { animation-delay: 0.8s; }
+.wave-text span:nth-child(10) { animation-delay: 0.9s; }
+
+@keyframes wave {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
+}
 

@@ -209,10 +209,10 @@ function playSong() {
     const audio1 = document.getElementById("dance-audio-1");
     const audio2 = document.getElementById("dance-audio-2");
 
+    // uncomment if u want to use both audios
     // const randomChoice = Math.random() < 0.5 ? audio1 : audio2;
     const randomChoice = audio2;
 
-    // Stop both before playing
     audio1.pause(); audio1.currentTime = 0;
     audio2.pause(); audio2.currentTime = 0;
 
@@ -268,7 +268,7 @@ sendBtn.addEventListener('click', async () => {
         playSong();     
         showChatResponse("Okay! Here's my dance! hehe");
         setTimeout(() => { isProcessingMessage = false; }, 1500);
-        return;
+        return; // return so dont call api
     }
     try {
         const aiReply = await sendMessageToAzure(message);

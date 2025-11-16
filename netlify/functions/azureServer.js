@@ -37,7 +37,7 @@ export async function handler(event) {
   };
 
   try {
-    // --- GLOBAL REQUEST LIMIT CHECK ---
+    // Check global request limit
     const count = await redis.incr("global_request_count");
     console.log("Global request count =", count);
 
@@ -51,7 +51,7 @@ export async function handler(event) {
       };
     }
 
-    // --- CALL AZURE OPENAI ---
+    // if limit not hit, then call openai api
     const azureResponse = await fetch(
       "https://virtual-puppet-resource.cognitiveservices.azure.com/openai/deployments/gpt-4o-2024-08-06-ft-8ba822937c0a498f8636591cb9f56c7b/chat/completions?api-version=2025-01-01-preview",
       {
