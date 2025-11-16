@@ -13,9 +13,15 @@ let currentVrm;
 let mixer;
 let idleClip = null;
 let talkingClip = null;
+let danceClip = null;
 
+let danceAction = null;
 let idleAction = null;
 let talkingAction = null;
+
+let isProcessingMessage = false;
+let isDancing = false;
+
 
 const clock = new THREE.Clock();
 
@@ -50,17 +56,23 @@ loadVRMModel(scene, gltfLoader, '/viseme.vrm')
 
         // Load idle animation first
         loadVRMA(gltfLoader, currentVrm, '/idle.vrma', clip => {
-        idleClip = clip;
-        idleAction = mixer.clipAction(idleClip);
-        idleAction.play(); // start looping immediately
+            idleClip = clip;
+            idleAction = mixer.clipAction(idleClip);
+            idleAction.play(); // start looping immediately
         });
 
         // Load talking animation next
         loadVRMA(gltfLoader, currentVrm, '/talking.vrma', clip => {
-        talkingClip = clip;
-        talkingAction = mixer.clipAction(talkingClip);
-        talkingAction.loop = THREE.LoopRepeat;
-        talkingAction.clampWhenFinished = true;
+            talkingClip = clip;
+            talkingAction = mixer.clipAction(talkingClip);
+            talkingAction.loop = THREE.LoopRepeat;
+            talkingAction.clampWhenFinished = true;
+        });
+        // Load dancing animation
+        loadVRMA(gltfLoader, currentVrm, '/dance.vrma', clip => {
+            danceClip = clip;
+            danceAction = mixer.clipAction(danceClip);
+            danceAction.loop = THREE.LoopRepeat;
         });
     })
 .catch(err => console.error('Error loading VRM:', err));
@@ -145,12 +157,15 @@ const sendBtn = document.getElementById('send-btn');
 
 function showChatResponse(text) {
     const chatArea = document.getElementById('chat-area');
+
+    const existing = chatArea.querySelector('.chat-bubble');
+    if (existing) existing.remove();
+
     const bubble = document.createElement('div');
     bubble.className = 'chat-bubble loading';
     bubble.innerHTML = `<span></span>`;
     chatArea.appendChild(bubble);
 
-    // Trigger smooth transition to talking animation
     playTalkingAnimation();
 
     void bubble.offsetWidth;
@@ -159,7 +174,6 @@ function showChatResponse(text) {
         bubble.classList.remove('loading');
     }, 150);
 
-    // Duration scaled by text length for realism
     const duration = Math.min(10000, 2000 + text.length * 50);
 
     setTimeout(() => {
@@ -168,19 +182,104 @@ function showChatResponse(text) {
     }, duration);
 }
 
+function triggerDanceMode() {
+    if (!mixer || !danceAction || !idleAction) return;
+    isDancing = true;
+
+    idleAction.enabled = true;
+    danceAction.enabled = true;
+
+    danceAction.reset();
+    danceAction.setEffectiveTimeScale(1);
+    danceAction.setEffectiveWeight(1);
+    danceAction.play();
+
+    idleAction.crossFadeTo(danceAction, 0.6, false);
+}
+
+function stopDanceMode() {
+    if (!mixer || !danceAction || !idleAction) return;
+    isDancing = false;
+
+    danceAction.crossFadeTo(idleAction, 1, false);
+    idleAction.reset().play();
+}
+
+function playSong() {
+    const audio1 = document.getElementById("dance-audio-1");
+    const audio2 = document.getElementById("dance-audio-2");
+
+    // const randomChoice = Math.random() < 0.5 ? audio1 : audio2;
+    const randomChoice = audio2;
+
+    // Stop both before playing
+    audio1.pause(); audio1.currentTime = 0;
+    audio2.pause(); audio2.currentTime = 0;
+
+    fadeIn(randomChoice);
+    randomChoice.onended = () => {
+        stopDanceMode(); 
+    };
+}
+
+function stopSong() {
+    const audio1 = document.getElementById("dance-audio-1");
+    const audio2 = document.getElementById("dance-audio-2");
+
+    [audio1, audio2].forEach(a => {
+        a.pause();
+        a.currentTime = 0;
+    });
+}
+
+function fadeIn(audio) {
+    audio.volume = 0;
+    audio.play();
+    let v = 0;
+    const fade = setInterval(() => {
+        v += 0.05;
+        audio.volume = v;
+        if (v >= 1) clearInterval(fade);
+    }, 100);
+}
+
 sendBtn.addEventListener('click', async () => {
+    if (isProcessingMessage) return;
+    isProcessingMessage = true;
+
     const message = chatInput.value.trim();
+    if (!message) {
+        isProcessingMessage = false;
+        return;
+    }
     if (!message) return;
     console.log('User:', message);
     chatInput.value = '';
+
+    if (isDancing) {
+        stopDanceMode();
+        stopSong();
+        isDancing = false;
+    }
+
+    const lower = message.toLowerCase();
+    if (lower.includes("dance") || lower.includes("song") || lower.includes("sing")) {
+        triggerDanceMode();
+        playSong();     
+        showChatResponse("Okay! Here's my dance! hehe");
+        setTimeout(() => { isProcessingMessage = false; }, 1500);
+        return;
+    }
     try {
         const aiReply = await sendMessageToAzure(message);
         showChatResponse(aiReply);
+        setTimeout(() => { isProcessingMessage = false; }, 1500);
     } catch (err) {
         console.error('Error from Azure:', err);
         showChatResponse(`Oops! I forgot to add more credits. In the mean time... 
             my name is Phoebe! Please click the upper right scroll icon to see my
             portfolio! See you later :)`);
+        setTimeout(() => { isProcessingMessage = false; }, 1500);
     }
 });
 
@@ -235,7 +334,6 @@ input.addEventListener("keydown", (e) => {
 
 function checkPassword() {
     if (input.value.trim().toLowerCase() === PASSWORD.toLowerCase()) {
-        // Success: fade out overlay
         screen.classList.add("hidden");
         setTimeout(() => {
         screen.remove();
