@@ -1,5 +1,10 @@
+import { Redis } from "@upstash/redis";
+
+const redis = Redis.fromEnv();
+const MAX_GLOBAL_REQUESTS = 20;
+
 export async function handler(event) {
-  const allowedOrigin = "https://virtual-puppet.netlify.app"; 
+  const allowedOrigin = "https://virtual-puppet.netlify.app";
   const origin = event.headers.origin;
 
   // Handle preflight (CORS OPTIONS)
@@ -14,7 +19,7 @@ export async function handler(event) {
     };
   }
 
-  // Deny if origin doesn’t match
+  // Block if origin is not allowed
   if (origin !== allowedOrigin) {
     return {
       statusCode: 403,
@@ -25,13 +30,28 @@ export async function handler(event) {
     };
   }
 
-  // Allowed CORS headers for actual response
+  // Allowed headers for actual response
   const headers = {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
   try {
+    // --- GLOBAL REQUEST LIMIT CHECK ---
+    const count = await redis.incr("global_request_count");
+    console.log("Global request count =", count);
+
+    if (count > MAX_GLOBAL_REQUESTS) {
+      return {
+        statusCode: 429,
+        headers,
+        body: JSON.stringify({
+          error: "I probably ran out of credits :(",
+        }),
+      };
+    }
+
+    // --- CALL AZURE OPENAI ---
     const azureResponse = await fetch(
       "https://virtual-puppet-resource.cognitiveservices.azure.com/openai/deployments/gpt-4o-2024-08-06-ft-8ba822937c0a498f8636591cb9f56c7b/chat/completions?api-version=2025-01-01-preview",
       {
@@ -45,8 +65,18 @@ export async function handler(event) {
     );
 
     const data = await azureResponse.json();
-    return { statusCode: 200, headers, body: JSON.stringify(data) };
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(data),
+    };
+
   } catch (err) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: err.message }),
+    };
   }
 }

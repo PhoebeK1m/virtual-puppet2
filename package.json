@@ -7,6 +7,7 @@
     "@mediapipe/holistic": "^0.5.1675471629",
     "@pixiv/three-vrm": "^3.4.2",
     "@pixiv/three-vrm-animation": "^3.4.2",
+    "@upstash/redis": "^1.35.6",
     "kalidokit": "^1.1.5",
     "three": "^0.179.1"
   },
