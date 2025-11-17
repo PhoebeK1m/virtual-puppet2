@@ -6,7 +6,7 @@ import { VRMAnimationLoaderPlugin } from '@pixiv/three-vrm-animation';
 import { createOrbitRig } from './components/camera.js';
 import { loadVRMModel } from './components/vrm.js';
 import { loadVRMA, playVRMAAnimation, stopVRMAAnimation } from './components/vrma.js';
-import { loadBackground } from './components/background.js';
+import { loadBackground, startDanceLights, stopDanceLights } from './components/background.js';
 
 // Global state
 let currentVrm;
@@ -166,13 +166,14 @@ function showChatResponse(text) {
     bubble.innerHTML = `<span></span>`;
     chatArea.appendChild(bubble);
 
-    playTalkingAnimation();
+    requestAnimationFrame(() => {
+        playTalkingAnimation();
 
-    void bubble.offsetWidth;
-    setTimeout(() => {
-        bubble.querySelector('span').textContent = text;
-        bubble.classList.remove('loading');
-    }, 150);
+        setTimeout(() => {
+            bubble.querySelector('span').textContent = text;
+            bubble.classList.remove('loading');
+        }, 50); 
+    });
 
     const duration = Math.min(10000, 2000 + text.length * 50);
 
@@ -185,6 +186,8 @@ function showChatResponse(text) {
 function triggerDanceMode() {
     if (!mixer || !danceAction || !idleAction) return;
     isDancing = true;
+
+    startDanceLights();
 
     idleAction.enabled = true;
     danceAction.enabled = true;
@@ -200,6 +203,8 @@ function triggerDanceMode() {
 function stopDanceMode() {
     if (!mixer || !danceAction || !idleAction) return;
     isDancing = false;
+
+    stopDanceLights();
 
     danceAction.crossFadeTo(idleAction, 1, false);
     idleAction.reset().play();
@@ -235,13 +240,16 @@ function stopSong() {
 function fadeIn(audio) {
     audio.volume = 0;
     audio.play();
-    let v = 0;
+
     const fade = setInterval(() => {
-        v += 0.05;
-        audio.volume = v;
-        if (v >= 1) clearInterval(fade);
+        audio.volume = Math.min(1, audio.volume + 0.05);
+
+        if (audio.volume >= 1) {
+            clearInterval(fade);
+        }
     }, 100);
 }
+
 
 sendBtn.addEventListener('click', async () => {
     if (isProcessingMessage) return;

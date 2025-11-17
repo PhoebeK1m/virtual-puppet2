@@ -9,6 +9,9 @@ const aspectRatio = originalWidth / originalHeight;
 const newHeight = newWidth / aspectRatio;
 const textureLoader = new THREE.TextureLoader();
 
+let backLight;
+let frontLight;
+
 export function loadBackground(scene) {
     // theater
     loadTexture('/theater/theater.png', scene, new THREE.Vector3( 18.5, 0, 0 ));
@@ -31,16 +34,33 @@ export function loadBackground(scene) {
     const ambientLight = new THREE.AmbientLight(0xffffff);
     ambientLight.position.set(0,0,0).normalize();
     scene.add(ambientLight);
-    const backLight = new THREE.PointLight(0xffac00, 1, 0);
+    backLight = new THREE.PointLight(0xffac00, 1, 0);
     backLight.position.set(18.5,-1.5,0);
     scene.add(backLight);
     // const backLightHelper = new THREE.PointLightHelper(backLight)
     // scene.add(backLightHelper);
-    const frontLight = new THREE.PointLight(0xffffff, 0.1, 0); 
+    frontLight = new THREE.PointLight(0xffffff, 0.1, 0); 
     frontLight.position.set(21,-2,0);
     scene.add(frontLight);
     // const frontLightHelper = new THREE.PointLightHelper(frontLight)
     // scene.add(frontLightHelper);
+}
+
+export function startDanceLights() {
+    if (!backLight || !frontLight) return;
+    console.log("dance light change");
+
+    backLight.color.set(0xF00FF0);      // pink
+    frontLight.color.set(0x1AD6E5);     // cyan
+    frontLight.intensity = 0.3;
+}
+
+export function stopDanceLights() {
+    if (!backLight || !frontLight) return;
+
+    backLight.color.set(0xffac00); 
+    frontLight.color.set(0xffffff);
+    frontLight.intensity = 0.1;
 }
 
 function loadTexture(textureUrl, scene, vector){
