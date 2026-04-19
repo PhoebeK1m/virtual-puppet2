@@ -118,3 +118,19 @@ function animate() {
   renderer.render(scene, orbitCamera);
 }
 animate();
+
+// Toggle Function
+function toggleCameraPreview() {
+    if (videoEl.style.display === 'none') {
+        videoEl.style.display = 'inline';
+    } else {
+        videoEl.style.display = 'none';
+    }
+}
+
+// Listen for the 'V' key
+window.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'v') {
+        toggleCameraPreview();
+    }
+});
